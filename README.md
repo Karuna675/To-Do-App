@@ -67,5 +67,3 @@ The project is fully deployed and production-ready.
 
 ---
 
-## 📁 Project Structure
-
