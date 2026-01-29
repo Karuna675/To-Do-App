@@ -7,7 +7,7 @@ The project is fully deployed and production-ready.
 
 ## 🚀 Live Demo
 
-- **Frontend (Vercel):**https://vercel.com/karuna675s-projects/to-do-app/Aeq3xF1gWK3HfkMHgwMkhMP4V8bb
+- **Frontend (Vercel):** https://vercel.com/karuna675s-projects/to-do-app/Aeq3xF1gWK3HfkMHgwMkhMP4V8bb
 - **Backend (Render):** https://to-do-list-w0c8.onrenderender.com
 
 ---
