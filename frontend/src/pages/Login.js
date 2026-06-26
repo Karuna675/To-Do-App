@@ -7,6 +7,7 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -15,18 +16,25 @@ function Login() {
     setError("");
 
     if (!email || !password) {
-      setError("All fields are required");
+      setError("Please fill in all fields.");
       return;
     }
 
     try {
       setLoading(true);
-      const res = await api.post("/auth/login", { email, password });
+
+      const res = await api.post("/auth/login", {
+        email,
+        password,
+      });
+
       localStorage.setItem("token", res.data.token);
+
       navigate("/tasks");
     } catch (err) {
       setError(
-        err.response?.data?.message || "Invalid email or password"
+        err.response?.data?.message ||
+          "Invalid email or password."
       );
     } finally {
       setLoading(false);
@@ -35,33 +43,98 @@ function Login() {
 
   return (
     <div className="container">
-      <form onSubmit={submit}>
-        <h2>Login</h2>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={submit}>
+
+        <h2>📝 To-Do List</h2>
+
+        <p
+          style={{
+            textAlign: "center",
+            marginBottom: 25,
+            color: "#f5f5f5"
+          }}
+        >
+          Welcome back 👋
+          <br />
+          Sign in to manage your tasks.
+        </p>
+
+        {error && (
+          <div className="error">
+            {error}
+          </div>
+        )}
 
         <input
           type="email"
-          placeholder="Email"
+          placeholder="📧 Email Address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div
+          style={{
+            position: "relative"
+          }}
+        >
+          <input
+            type={
+              showPassword
+                ? "text"
+                : "password"
+            }
+            placeholder="🔒 Password"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+          />
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+          <span
+            onClick={() =>
+              setShowPassword(!showPassword)
+            }
+            style={{
+              position: "absolute",
+              right: 15,
+              top: 15,
+              cursor: "pointer",
+              userSelect: "none",
+              fontSize: 18
+            }}
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </span>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+        >
+          {loading
+            ? "Signing In..."
+            : "Login"}
         </button>
 
-        <p style={{ marginTop: "12px", textAlign: "center" }}>
-          Don’t have an account? <Link to="/register">Register</Link>
+        <p
+          style={{
+            marginTop: 22,
+            textAlign: "center"
+          }}
+        >
+          Don't have an account?
+          <br />
+
+          <Link to="/register">
+            Create one →
+          </Link>
         </p>
+
       </form>
+
     </div>
   );
 }

@@ -7,6 +7,8 @@ function Register() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -15,22 +17,28 @@ function Register() {
     setError("");
 
     if (!email || !password) {
-      setError("All fields are required");
+      setError("Please fill in all fields.");
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError("Password must be at least 6 characters.");
       return;
     }
 
     try {
       setLoading(true);
-      await api.post("/auth/register", { email, password });
+
+      await api.post("/auth/register", {
+        email,
+        password,
+      });
+
       navigate("/");
     } catch (err) {
       setError(
-        err.response?.data?.message || "Registration failed"
+        err.response?.data?.message ||
+        "Registration failed."
       );
     } finally {
       setLoading(false);
@@ -39,33 +47,98 @@ function Register() {
 
   return (
     <div className="container">
-      <form onSubmit={submit}>
-        <h2>Register</h2>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={submit}>
+
+        <h2>📝 To-Do List</h2>
+
+        <p
+          style={{
+            textAlign: "center",
+            color: "#f5f5f5",
+            marginBottom: 25,
+          }}
+        >
+          Create your account 
+          <br />
+          Start organizing your daily tasks.
+        </p>
+
+        {error && (
+          <div className="error">
+            {error}
+          </div>
+        )}
 
         <input
           type="email"
-          placeholder="Email"
+          placeholder="📧 Email Address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div
+          style={{
+            position: "relative",
+          }}
+        >
+          <input
+            type={
+              showPassword
+                ? "text"
+                : "password"
+            }
+            placeholder="🔒 Password"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+          />
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Creating account..." : "Register"}
+          <span
+            onClick={() =>
+              setShowPassword(!showPassword)
+            }
+            style={{
+              position: "absolute",
+              right: 15,
+              top: 15,
+              cursor: "pointer",
+              userSelect: "none",
+              fontSize: 18,
+            }}
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </span>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+        >
+          {loading
+            ? "Creating Account..."
+            : "Register"}
         </button>
 
-        <p style={{ marginTop: "12px", textAlign: "center" }}>
-          Already have an account? <Link to="/">Login</Link>
+        <p
+          style={{
+            marginTop: 22,
+            textAlign: "center",
+          }}
+        >
+          Already have an account?
+          <br />
+
+          <Link to="/">
+            Login →
+          </Link>
         </p>
+
       </form>
+
     </div>
   );
 }
