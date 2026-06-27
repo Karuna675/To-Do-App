@@ -133,8 +133,6 @@ exports.updatePage = async (req, res) => {
 // Delete Page
 // ==============================
 
-const Task = require("../models/Task");
-
 exports.deletePage = async (req, res) => {
 
   try {
