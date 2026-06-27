@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/tasks", require("./routes/taskRoutes"));
-
+app.use("/api/pages", require("./routes/pageRoutes"));
 app.get("/", (req, res) => {
   res.send("To-Do List Backend is running 🚀");
 });

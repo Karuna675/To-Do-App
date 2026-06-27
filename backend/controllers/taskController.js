@@ -1,50 +1,135 @@
 const Task = require("../models/Task");
 
+// ==============================
+// Create Task
+// ==============================
+
 exports.createTask = async (req, res) => {
-  const task = await Task.create({
-    title: req.body.title,
-    user: req.user
-  });
-  res.status(201).json(task);
+  try {
+    const { title, page } = req.body;
+
+    if (!title || !page) {
+      return res.status(400).json({
+        message: "Title and Page are required",
+      });
+    }
+
+    const task = await Task.create({
+      title,
+      page,
+      user: req.user,
+    });
+
+    res.status(201).json(task);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
 };
+
+// ==============================
+// Get Tasks
+// ==============================
 
 exports.getTasks = async (req, res) => {
-  const page = Number(req.query.page) || 1;
-  const limit = 5;
-  const skip = (page - 1) * limit;
+  try {
+    const pageNumber = Number(req.query.page) || 1;
+    const limit = 5;
+    const skip = (pageNumber - 1) * limit;
 
-  const filter = { user: req.user };
-  if (req.query.status) filter.status = req.query.status;
+    const filter = {
+      user: req.user,
+    };
 
-  let sort = { createdAt: -1 };
-  if (req.query.sort === "oldest") sort = { createdAt: 1 };
+    if (req.query.status) {
+      filter.status = req.query.status;
+    }
 
-  const tasks = await Task.find(filter)
-    .sort(sort)
-    .skip(skip)
-    .limit(limit);
+    // NEW
+    if (req.query.pageId) {
+      filter.page = req.query.pageId;
+    }
 
-  const total = await Task.countDocuments(filter);
+    let sort = {
+      createdAt: -1,
+    };
 
-  res.json({
-    tasks,
-    totalPages: Math.ceil(total / limit)
-  });
+    if (req.query.sort === "oldest") {
+      sort = {
+        createdAt: 1,
+      };
+    }
+
+    const tasks = await Task.find(filter)
+      .populate("page", "name")
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Task.countDocuments(filter);
+
+    res.json({
+      tasks,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
 };
+
+// ==============================
+// Update Task
+// ==============================
 
 exports.updateTask = async (req, res) => {
-  const task = await Task.findOneAndUpdate(
-    { _id: req.params.id, user: req.user },
-    req.body,
-    { new: true }
-  );
-  res.json(task);
+  try {
+    const task = await Task.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user: req.user,
+      },
+      req.body,
+      {
+        new: true,
+      }
+    );
+
+    res.json(task);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
 };
 
+// ==============================
+// Delete Task
+// ==============================
+
 exports.deleteTask = async (req, res) => {
-  await Task.findOneAndDelete({
-    _id: req.params.id,
-    user: req.user
-  });
-  res.json({ message: "Task deleted" });
+  try {
+    await Task.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user,
+    });
+
+    res.json({
+      message: "Task deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
 };

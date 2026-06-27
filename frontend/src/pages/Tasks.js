@@ -12,6 +12,10 @@ function Tasks() {
   const navigate = useNavigate();
 
   const [tasks, setTasks] = useState([]);
+
+  const [pages, setPages] = useState([]);
+  const [selectedPage, setSelectedPage] = useState("");
+  const [newPage, setNewPage] = useState("");
   const [title, setTitle] = useState("");
 
   const [statusFilter, setStatusFilter] = useState("");
@@ -56,18 +60,28 @@ function Tasks() {
   // Fetch Tasks
   // -----------------------
 
-  useEffect(() => {
+useEffect(() => {
+  fetchPages();
+}, []);
+
+useEffect(() => {
+  if (selectedPage) {
     fetchTasks();
-    // eslint-disable-next-line
-  }, [page, statusFilter, sort]);
+  }
+}, [
+  page,
+  statusFilter,
+  sort,
+  selectedPage,
+]);
 
   const fetchTasks = async () => {
     try {
       setLoading(true);
 
       const res = await api.get(
-        `/tasks?page=${page}&status=${statusFilter}&sort=${sort}`
-      );
+  `/tasks?page=${page}&pageId=${selectedPage}&status=${statusFilter}&sort=${sort}`
+);
 
       setTasks(res.data.tasks);
       setTotalPages(res.data.totalPages);
@@ -77,7 +91,45 @@ function Tasks() {
       setLoading(false);
     }
   };
+// ======================
+// Fetch Pages
+// ======================
 
+const fetchPages = async () => {
+  try {
+    const res = await api.get("/pages");
+
+    setPages(res.data);
+
+    if (res.data.length > 0 && !selectedPage) {
+      setSelectedPage(res.data[0]._id);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// ======================
+// Create Page
+// ======================
+
+const createPage = async () => {
+  if (!newPage.trim()) return;
+
+  try {
+const res = await api.post("/pages", {
+  name: newPage,
+});
+
+setNewPage("");
+
+await fetchPages();
+
+setSelectedPage(res.data._id);
+  } catch (err) {
+    console.log(err);
+  }
+};
   // -----------------------
   // Add Task
   // -----------------------
@@ -89,8 +141,9 @@ function Tasks() {
 
     try {
       await api.post("/tasks", {
-        title,
-      });
+  title,
+  page: selectedPage,
+});
 
       setTitle("");
       setPage(1);
@@ -185,15 +238,162 @@ function Tasks() {
   // UI STARTS HERE
   // ===========================
 
-  return (
-    <div className="dashboard">
+return (
+
+<div
+  style={{
+    display: "flex",
+    minHeight: "100vh",
+  }}
+>
+
+{/* ================= Sidebar ================= */}
+
+<div
+  style={{
+    width: "280px",
+    background: "rgba(255,255,255,.12)",
+    backdropFilter: "blur(15px)",
+    padding: "25px",
+    color: "white",
+    borderRight: "1px solid rgba(255,255,255,.15)",
+  }}
+>
+
+<h2
+  style={{
+    marginBottom: "30px",
+    textAlign: "center",
+  }}
+>
+📝 TO-DO Pro
+</h2>
+
+<input
+  type="text"
+  placeholder="New Page"
+  value={newPage}
+  onChange={(e)=>setNewPage(e.target.value)}
+/>
+
+<button
+  onClick={createPage}
+  style={{
+    marginBottom: "25px",
+  }}
+>
+➕ Create Page
+</button>
+
+<div>
+  
+
+{pages.map((page)=>{
+
+return(
+
+<div
+key={page._id}
+
+onClick={()=>{
+
+setSelectedPage(page._id);
+setPage(1);
+
+}}
+
+style={{
+
+padding:"14px",
+
+marginBottom:"10px",
+
+borderRadius:"12px",
+
+cursor:"pointer",
+
+background:
+  selectedPage === page._id
+    ? "linear-gradient(135deg,#667eea,#764ba2)"
+    : "transparent",
+
+boxShadow:
+  selectedPage === page._id
+    ? "0 10px 25px rgba(0,0,0,.25)"
+    : "none",
+
+fontWeight:
+  selectedPage === page._id
+    ? "600"
+    : "400",
+
+transition:".3s"
+
+}}
+
+>
+
+<span
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  }}
+>
+📄 {page.name}
+</span>
+
+</div>
+
+);
+
+})}
+
+</div>
+
+<div
+style={{
+marginTop:"40px"
+}}
+>
+
+<button
+
+onClick={logout}
+
+style={{
+background:"#ef4444"
+}}
+
+>
+
+Logout
+
+</button>
+
+</div>
+
+</div>
+
+{/* ================= Main Content ================= */}
+
+<div
+style={{
+flex:1,
+padding:"30px"
+}}
+>
+
+<div className="dashboard">
 
       <div className="header">
 
         <div>
           <h1 style={{ color: "white" }}>
-            📝 To-Do Dashboard
-          </h1>
+  📁{" "}
+  {pages.find((p) => p._id === selectedPage)?.name ||
+    "Dashboard"}
+</h1>
 
           <p style={{ color: "white" }}>
             {greeting}
@@ -205,15 +405,6 @@ function Tasks() {
 
         </div>
 
-        <button
-          onClick={logout}
-          style={{
-            width: "150px",
-            background: "#ef4444"
-          }}
-        >
-          Logout
-        </button>
 
       </div>
       {/* Add Task */}
@@ -589,8 +780,13 @@ function Tasks() {
         </p>
       </div>
 
-    </div>
-  );
+   </div>
+
+</div>
+
+</div>
+
+);
 }
 
 export default Tasks;

@@ -4,20 +4,31 @@ const taskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true
+      required: true,
+      trim: true,
     },
+
     status: {
       type: String,
       enum: ["Pending", "In-Progress", "Completed"],
-      default: "Pending"
+      default: "Pending",
     },
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
-    }
+      required: true,
+    },
+
+    page: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Page",
+      required: true,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = mongoose.model("Task", taskSchema);
