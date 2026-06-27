@@ -28,7 +28,51 @@ exports.createPage = async (req, res) => {
     });
   }
 };
+// ======================
+// Rename Page
+// ======================
 
+const renamePage = async (id, currentName) => {
+  const newName = prompt("Enter new page name", currentName);
+
+  if (!newName || !newName.trim()) return;
+
+  try {
+    await api.put(`/pages/${id}`, {
+      name: newName,
+    });
+
+    fetchPages();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// ======================
+// Delete Page
+// ======================
+
+const deletePage = async (id) => {
+  const confirmDelete = window.confirm(
+    "Delete this page and all its tasks?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    await api.delete(`/pages/${id}`);
+
+    if (selectedPage === id) {
+      setSelectedPage("");
+    }
+
+    fetchPages();
+    fetchTasks();
+
+  } catch (err) {
+    console.log(err);
+  }
+};
 // ==============================
 // Get All Pages
 // ==============================

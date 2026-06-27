@@ -130,6 +130,42 @@ setSelectedPage(res.data._id);
     console.log(err);
   }
 };
+const renamePage = async (id, currentName) => {
+  const newName = prompt("Enter new page name", currentName);
+
+  if (!newName || !newName.trim()) return;
+
+  try {
+    await api.put(`/pages/${id}`, {
+      name: newName,
+    });
+
+    fetchPages();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const deletePage = async (id) => {
+  const confirmDelete = window.confirm(
+    "Delete this page and all its tasks?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    await api.delete(`/pages/${id}`);
+
+    if (selectedPage === id) {
+      setSelectedPage("");
+    }
+
+    fetchPages();
+    fetchTasks();
+  } catch (err) {
+    console.log(err);
+  }
+};
   // -----------------------
   // Add Task
   // -----------------------
@@ -324,16 +360,72 @@ return (
       }}
     >
 
-      <span
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          fontSize: "16px",
-        }}
-      >
-        📄 {page.name}
-      </span>
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  }}
+>
+
+  <span
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "10px",
+      fontSize: "16px",
+      color: "white",
+    }}
+  >
+    📄 {page.name}
+  </span>
+
+  <div
+    style={{
+      display: "flex",
+      gap: "8px",
+    }}
+  >
+
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        renamePage(page._id, page.name);
+      }}
+      style={{
+        width: "35px",
+        height: "35px",
+        borderRadius: "50%",
+        border: "none",
+        cursor: "pointer",
+        background: "#3b82f6",
+        color: "white",
+      }}
+    >
+      ✏
+    </button>
+
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        deletePage(page._id);
+      }}
+      style={{
+        width: "35px",
+        height: "35px",
+        borderRadius: "50%",
+        border: "none",
+        cursor: "pointer",
+        background: "#ef4444",
+        color: "white",
+      }}
+    >
+      🗑
+    </button>
+
+  </div>
+
+</div>
 
     </div>
 
