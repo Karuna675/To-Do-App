@@ -23,7 +23,7 @@ function Tasks() {
   const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [, setTotalPages] = useState(1);
 
   const [loading, setLoading] = useState(true);
 
@@ -62,18 +62,15 @@ function Tasks() {
 
 useEffect(() => {
   fetchPages();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, []);
 
 useEffect(() => {
   if (selectedPage) {
     fetchTasks();
   }
-}, [
-  page,
-  statusFilter,
-  sort,
-  selectedPage,
-]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [page, statusFilter, sort, selectedPage]);
 
   const fetchTasks = async () => {
     try {
