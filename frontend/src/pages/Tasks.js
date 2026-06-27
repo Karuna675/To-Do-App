@@ -271,7 +271,7 @@ return (
 
 <input
   type="text"
-  placeholder="New Page"
+  placeholder="New List"
   value={newPage}
   onChange={(e)=>setNewPage(e.target.value)}
 />
@@ -282,59 +282,62 @@ return (
     marginBottom: "25px",
   }}
 >
-➕ Create Page
+➕ Create List
 </button>
 
 <div>
 
-{pages.map((page)=>{
+{pages.map((page) => {
 
-return(
+  return (
 
-<div
-key={page._id}
+    <div
+      key={page._id}
+      onClick={() => {
+        setSelectedPage(page._id);
+        setPage(1);
+      }}
+      style={{
+        padding: "14px",
+        marginBottom: "10px",
+        borderRadius: "12px",
+        cursor: "pointer",
 
-onClick={()=>{
+        background:
+          selectedPage === page._id
+            ? "linear-gradient(135deg,#667eea,#764ba2)"
+            : "transparent",
 
-setSelectedPage(page._id);
-setPage(1);
+        boxShadow:
+          selectedPage === page._id
+            ? "0 10px 25px rgba(255,255,255,.15)"
+            : "none",
 
-}}
+        fontWeight:
+          selectedPage === page._id
+            ? "600"
+            : "400",
 
-style={{
+        color: "white",
 
-padding:"14px",
+        transition: ".3s",
+      }}
+    >
 
-marginBottom:"10px",
+      <span
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          fontSize: "16px",
+        }}
+      >
+        📄 {page.name}
+      </span>
 
-borderRadius:"12px",
+    </div>
 
-cursor:"pointer",
-
-background:
-  selectedPage === page._id
-    ? "linear-gradient(135deg,#667eea,#764ba2)"
-    : "transparent",
-
-boxShadow:
-  selectedPage === page._id
-    ? "0 10px 25px rgba(0,0,0,.25)"
-    : "none",
-
-fontWeight:
-  selectedPage === page._id
-    ? "600"
-    : "400",
-
-transition:".3s"
-
-}}
-
->
-
-</div>
-
-);
+  );
 
 })}
 
@@ -379,7 +382,7 @@ padding:"30px"
 
         <div>
           <h1 style={{ color: "white" }}>
-  📁{" "}
+  📄{" "}
   {pages.find((p) => p._id === selectedPage)?.name ||
     "Dashboard"}
 </h1>
@@ -712,48 +715,6 @@ padding:"30px"
 
       </div>
             
-
-      
-            {/* Pagination */}
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "15px",
-          marginTop: "30px",
-          marginBottom: "40px",
-        }}
-      >
-        <button
-          style={{ width: "120px" }}
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-        >
-          ← Previous
-        </button>
-
-        <div
-          style={{
-            background: "rgba(255,255,255,.18)",
-            color: "white",
-            padding: "12px 20px",
-            borderRadius: "12px",
-            fontWeight: "600",
-          }}
-        >
-          Page {page} of {totalPages}
-        </div>
-
-        <button
-          style={{ width: "120px" }}
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-        >
-          Next →
-        </button>
-      </div>
 
       {/* Footer */}
 

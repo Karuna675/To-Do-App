@@ -1,5 +1,5 @@
 const Page = require("../models/Page");
-
+const Task = require("../models/Task");
 // ==============================
 // Create Page
 // ==============================
@@ -68,17 +68,20 @@ exports.updatePage = async (req, res) => {
       });
     }
 
-    page.name = req.body.name || page.name;
+    page.name = req.body.name;
 
     await page.save();
 
     res.json(page);
+
   } catch (error) {
+
     console.error(error);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
 };
 
@@ -86,8 +89,12 @@ exports.updatePage = async (req, res) => {
 // Delete Page
 // ==============================
 
+const Task = require("../models/Task");
+
 exports.deletePage = async (req, res) => {
+
   try {
+
     const page = await Page.findOne({
       _id: req.params.id,
       user: req.user,
@@ -99,16 +106,25 @@ exports.deletePage = async (req, res) => {
       });
     }
 
+    // Delete all tasks inside this page
+    await Task.deleteMany({
+      page: page._id,
+    });
+
     await page.deleteOne();
 
     res.json({
-      message: "Page deleted successfully",
+      message: "Page deleted",
     });
+
   } catch (error) {
+
     console.error(error);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
+
 };
