@@ -286,7 +286,6 @@ return (
 </button>
 
 <div>
-  
 
 {pages.map((page)=>{
 
@@ -332,16 +331,6 @@ transition:".3s"
 }}
 
 >
-
-<span
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  }}
->
-📄 {page.name}
-</span>
 
 </div>
 

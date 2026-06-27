@@ -16,7 +16,7 @@ exports.createPage = async (req, res) => {
 
     const page = await Page.create({
       name,
-      user: req.user.id,
+      user: req.user,
     });
 
     res.status(201).json(page);
@@ -36,7 +36,7 @@ exports.createPage = async (req, res) => {
 exports.getPages = async (req, res) => {
   try {
     const pages = await Page.find({
-      user: req.user.id,
+      user: req.user,
     }).sort({
       createdAt: 1,
     });
@@ -59,7 +59,7 @@ exports.updatePage = async (req, res) => {
   try {
     const page = await Page.findOne({
       _id: req.params.id,
-      user: req.user.id,
+      user: req.user,
     });
 
     if (!page) {
@@ -90,7 +90,7 @@ exports.deletePage = async (req, res) => {
   try {
     const page = await Page.findOne({
       _id: req.params.id,
-      user: req.user.id,
+      user: req.user,
     });
 
     if (!page) {
